@@ -1,5 +1,7 @@
-LoTSS/mosaics/*
+LoTSS/mosaics/** */
 LoTSS/mosaics
+LoTSS/cutouts
+LoTSS/cutouts/** */
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
