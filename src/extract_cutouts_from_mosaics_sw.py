@@ -44,6 +44,8 @@ for mosaic in collection:
     output_dir = os.path.join(output_base_folder, mosaic.mosaic_name)
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
+    else:
+        continue
     if not os.path.exists(os.path.join(output_dir, "npy")):
         os.makedirs(os.path.join(output_dir, "npy"))
     #if not os.path.exists(os.path.join(output_dir, "previews")):
@@ -69,6 +71,7 @@ for mosaic in collection:
                     "mosaic_name": mosaic.mosaic_name,
                     "position": [i, j],
                     "size": window_size
+                    # aggiungere informazioni sui vicini
                 })
 
     # Salva le informazioni su file JSON

@@ -1,3 +1,5 @@
+*.txt
+
 LoTSS/mosaics/** */
 LoTSS/mosaics
 LoTSS/cutouts
