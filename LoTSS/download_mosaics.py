@@ -18,7 +18,7 @@ file_paths = [
 ]
 
 # Nome del file contenente gli ID
-list_file = "mosaics_name_list.txt"
+list_file = "to_download.txt"
 
 # Directory di destinazione per i file scaricati
 output_dir = "mosaics"

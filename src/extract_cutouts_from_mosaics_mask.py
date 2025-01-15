@@ -7,14 +7,6 @@ from astropy.io import fits
 import numpy as np
 from scipy.ndimage import label, find_objects
 
-# Funzione per gestire gli argomenti della linea di comando
-def parse_args():
-    parser = argparse.ArgumentParser(description="Crea ritagli da mosaici LoTSS usando bounding boxes.")
-    return parser.parse_args()
-
-# Parsing degli argomenti
-args = parse_args()
-
 # Percorso base per i cutout
 output_base_folders = {
     "1.5": "/home/tcecconello/radioimgs/radio-data-curation-ssl/LoTSS/cutouts/mc_cutouts_1.5",
@@ -117,21 +109,24 @@ for mosaic in collection:
             npy_filename = f"patch_{idx}_size_{cutout_size}.npy"
             npy_path = os.path.join(output_dir, "npy", npy_filename)
 
-            np.save(npy_path, patch)
-            print(f"Saved patch: {npy_path}")
+            try:
+                np.save(npy_path, patch)
+                print(f"Saved patch: {npy_path}")
 
-            # Aggiungere informazioni al file JSON per il mosaico corrente
-            mosaic_cutout_info[folder_key].append({
-                "mosaic": mosaic.mosaic_name,
-                "filename": npy_filename,
-                "position": [center_x, center_y],
-                "size": cutout_size
-            })
+                # Aggiungere informazioni al file JSON per il mosaico corrente
+                mosaic_cutout_info[folder_key].append({
+                    "mosaic": mosaic.mosaic_name,
+                    "filename": npy_filename,
+                    "position": [center_x, center_y],
+                    "size": cutout_size
+                })
+            except:
+                pass
 
     # Salva le informazioni su file JSON per il mosaico corrente
     for folder_key, info in mosaic_cutout_info.items():
         mosaic_folder = os.path.join(output_base_folders[folder_key], mosaic.mosaic_name)
-        json_path = os.path.join(mosaic_folder, f"info_mc_cutouts_{folder_key}.json")
+        json_path = os.path.join(mosaic_folder, f"info.json")
         os.makedirs(mosaic_folder, exist_ok=True)
         with open(json_path, 'w') as json_file:
             json.dump(info, json_file, indent=4)

@@ -29,23 +29,24 @@ collection = LoTTSCollection(name="LoTTS", path="/home/tcecconello/radioimgs/rad
 print(collection)
 
 # Dizionario per salvare le informazioni sui cutout
-cutout_info = []
+
 
 # Itera sui mosaici nella collezione
 for mosaic in collection:
-    print(f"Mosaic: {mosaic.mosaic_name}, Path: {mosaic.mosaic_path}, Mask: {mosaic.mask_path}")
+    cutout_info = []
+    print(f"Mosaic: {mosaic.mosaic_name}, Path: {mosaic.mosaic_path}")
     
     image_path = mosaic.mosaic_path
-    mask_path = mosaic.mask_path
+    #mask_path = mosaic.mask_path
     
     mosaic_data = fits.getdata(image_path)
-    mask = np.squeeze(fits.getdata(mask_path))
+    #mask = np.squeeze(fits.getdata(mask_path))
 
     output_dir = os.path.join(output_base_folder, mosaic.mosaic_name)
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
     else:
-        continue
+        pass
     if not os.path.exists(os.path.join(output_dir, "npy")):
         os.makedirs(os.path.join(output_dir, "npy"))
     #if not os.path.exists(os.path.join(output_dir, "previews")):
@@ -60,21 +61,54 @@ for mosaic in collection:
                 #png_filename = f"patch_{i}_{j}.png"
 
                 npy_path = os.path.join(output_dir, "npy", npy_filename)
+                if i == 640:
+                    print(npy_filename)
+                    print(npy_path)
                 #png_path = os.path.join(output_dir, "previews", png_filename)
+                try:
+                    np.save(npy_path, patch)
+                    #plt.imsave(png_path, patch, cmap='gray')
+                    if os.path.exists(npy_path):
+                        cutout_info.append({
+                            "filename": npy_filename,
+                            "survey": collection.name,
+                            "mosaic_name": mosaic.mosaic_name,
+                            "position": [i, j],
+                            "size": window_size
+                            # aggiungere informazioni sui vicini
+                        })
+                    else:
+                        print(f"Il file {npy_path} non è stato creato correttamente.")
+                except Exception as e:
+                    print(f"Errore nel salvataggio del file {npy_path}: {e}")
 
-                np.save(npy_path, patch)
-                #plt.imsave(png_path, patch, cmap='gray')
-
-                cutout_info.append({
-                    "filename": npy_filename,
-                    "survey": collection.name,
-                    "mosaic_name": mosaic.mosaic_name,
-                    "position": [i, j],
-                    "size": window_size
-                    # aggiungere informazioni sui vicini
-                })
 
     # Salva le informazioni su file JSON
-    json_path = os.path.join(output_dir, f"info_sw_{window_size}.json")
+    json_path = os.path.join(output_dir, f"info.json")
     with open(json_path, 'w') as json_file:
         json.dump(cutout_info, json_file, indent=4)
+
+
+    """
+    # Soluzione temporanea
+    with open(json_path, 'r') as json_file:
+        cutout_info = json.load(json_file)
+
+    valid_cutout_info = [info for info in cutout_info if os.path.exists(os.path.join(output_dir, "npy", info["filename"]))]
+
+    with open(json_path, 'w') as json_file:
+        json.dump(valid_cutout_info, json_file, indent=4)
+
+    print(f"Ripuliti i metadati: {len(cutout_info) - len(valid_cutout_info)} elementi rimossi.")
+    """
+    valid_cutout_info = [info for info in cutout_info if os.path.exists(os.path.join(output_dir, "npy", info["filename"]))]
+    saved_files = set(os.listdir(os.path.join(output_dir, "npy")))
+    json_files = {info["filename"] for info in valid_cutout_info}
+
+    missing_in_json = saved_files - json_files
+    missing_on_disk = json_files - saved_files
+
+    if missing_in_json:
+        print(f"File presenti su disco ma mancanti nel JSON: {missing_in_json}")
+    if missing_on_disk:
+        print(f"File presenti nel JSON ma mancanti su disco: {missing_on_disk}")

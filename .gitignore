@@ -1,5 +1,8 @@
 *.txt
 
+model_weights/*
+!model_weights/model_list.txt
+
 LoTSS/mosaics/** */
 LoTSS/mosaics
 LoTSS/cutouts
