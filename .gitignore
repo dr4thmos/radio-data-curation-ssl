@@ -1,5 +1,15 @@
 *.txt
+test_data_format
 
+*.pdf
+wandb
+artifacts/
+mlruns
+model_weights
+sample_images
+features
+data
+configs
 model_weights/*
 !model_weights/model_list.txt
 

@@ -34,6 +34,6 @@ ngpus_per_node:
 nnodes:
 - 1
 - 1
-ncpus_per_gpu: 4
+ncpus_per_gpu: 8
 sampling_strategy: c
 slurm_partition: null

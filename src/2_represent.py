@@ -1,3 +1,5 @@
+import os
+os.environ["CUDA_VISIBLE_DEVICES"] = "4"
 from collections import OrderedDict
 from thingsvision import get_extractor_from_model
 from torchvision.models import resnet18#, resnet50
@@ -8,18 +10,19 @@ from data_classes import CustomUnlabeledDatasetWithPath
 import torchvision.transforms as T
 import torch
 
+device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
-# set the device to 'cuda' if you have a GPU available
-device = 'cuda:1' if torch.cuda.is_available() else 'cpu'
-
-ckpt_path = "/home/tcecconello/radioimgs/radio-data-curation-ssl/model_weights/uja9qvb7/byol_hulk_aug_minmax_model_resnet18-uja9qvb7-ep=100.ckpt"
+#ckpt_path = "/home/tcecconello/radioimgs/radio-data-curation-ssl/model_weights/uja9qvb7/byol_hulk_aug_minmax_model_resnet18-uja9qvb7-ep=100.ckpt"
+ckpt_path = "/home/tcecconello/radioimgs/radio-data-curation-ssl/model_weights/uja9qvb7.ckpt"
 backbone_architecture = "resnet18"
 
 model = resnet18(weights=None)
-print(model)
+#print(model)
 model.fc = torch.nn.Identity()
-checkpoint = torch.load(ckpt_path, map_location=device, weights_only=False)
-print(checkpoint["state_dict"].keys())
+checkpoint = torch.load(ckpt_path, map_location=device, weights_only=False) # checkpoint = torch.load(ckpt_path, map_location={'cuda:0': device})
+
+
+#print(checkpoint["state_dict"].keys())
 backbone_state_dict = OrderedDict(
     [(k.replace("backbone.", ""), v) for k, v in checkpoint["state_dict"].items() if k.startswith("backbone.")]
 )
@@ -63,6 +66,7 @@ dataset = CustomUnlabeledDatasetWithPath(
 batches = DataLoader(
     dataset=dataset,
     batch_size=batch_size,
+    #num_workers=0,
     backend=extractor.get_backend() # backend framework of model
 )
 
@@ -76,5 +80,5 @@ features = extractor.extract_features(
     flatten_acts=True,
     output_type="ndarray", # or "tensor" (only applicable to PyTorch models of which CLIP and DINO are ones!)
 )
-
-save_features(features, out_path='/home/tcecconello/radioimgs/radio-data-curation-ssl/features', file_format='npy') # file_format can be set to "npy", "txt", "mat", "pt", or "hdf5"
+ 
+save_features(features, out_path='/home/tcecconello/radioimgs/radio-data-curation-ssl/features_byol_hulk_norm_minmax', file_format='npy') # file_format can be set to "npy", "txt", "mat", "pt", or "hdf5"

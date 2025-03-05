@@ -1,0 +1,13 @@
+Add data:
+- Supercluster/ammassi di galassie https://lofar-surveys.org/planck_dr2.html
+- Simulazioni https://owncloud.ia2.inaf.it/index.php/s/IbFPlCCcPUresrr 
+
+Estrarre ed organizzare features
+- Per modello, per selezione
+
+Preparare validation
+- SSL on different selection and full dataset
+
+Visualize
+- Visualize prototype of selection
+- DEBUG, choose overlapped cutout and select

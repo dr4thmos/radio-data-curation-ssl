@@ -92,6 +92,7 @@ class HierarchicalCluster:
     def from_file(
         cluster_path,
         cluster_fname="sorted_clusters.npy",
+        levels=None
     ):
         """
         Method for reading hierarchical clusters from files
@@ -106,6 +107,9 @@ class HierarchicalCluster:
                 cl.n_levels += 1
             else:
                 break
+        if levels is not None:
+            cl.n_levels = min(levels, cl.n_levels)
+        
         cl.load_clusters_from_file()
         cl.process_clusters()
         return cl
