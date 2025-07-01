@@ -11,7 +11,7 @@ import random
 import numpy as np
 from tqdm import tqdm
 
-from src.clusters import HierarchicalCluster
+from .clusters import HierarchicalCluster
 
 
 logger = logging.getLogger("hkmeans")
