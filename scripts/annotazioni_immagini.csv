@@ -1,0 +1,60 @@
+file_path,categories
+outputs/cutouts/cutouts-strategy_sliding_window-overlap_05-size_256_30d67552/P144+35/npy/patch_8192_4480.npy,"['diffuse', 'little-resolved']"
+outputs/cutouts/cutouts-strategy_sliding_window-overlap_05-size_256_30d67552/P29Hetdex19/npy/patch_6656_6912.npy,"['sparse', 'point-like']"
+outputs/cutouts/cutouts-strategy_sliding_window-overlap_05-size_256_30d67552/P179+32/npy/patch_8448_6400.npy,"['small-galaxy', 'little-resolved']"
+outputs/cutouts/cutouts-strategy_sliding_window-overlap_05-size_256_30d67552/P135+42/npy/patch_3328_2560.npy,['artefact']
+outputs/cutouts/cutouts-strategy_sliding_window-overlap_05-size_256_30d67552/P035+41/npy/patch_6528_3456.npy,"['full-resolved', 'Cutted']"
+outputs/cutouts/cutouts-strategy_sliding_window-overlap_05-size_256_30d67552/P180+65/npy/patch_2432_1664.npy,"['full-resolved', 'Interesting']"
+outputs/cutouts/cutouts-strategy_sliding_window-overlap_05-size_256_30d67552/P139+32/npy/patch_256_4480.npy,"['sparse', 'small-galaxy']"
+outputs/cutouts/cutouts-strategy_sliding_window-overlap_05-size_256_30d67552/P167+42/npy/patch_5120_1536.npy,['artefact']
+outputs/cutouts/cutouts-strategy_sliding_window-overlap_05-size_256_30d67552/P195+27/npy/patch_6016_4480.npy,"['small-galaxy', 'diffuse', 'little-resolved']"
+outputs/cutouts/cutouts-strategy_sliding_window-overlap_05-size_256_30d67552/P195+27/npy/patch_5248_640.npy,"['full-resolved', 'FR']"
+outputs/cutouts/cutouts-strategy_sliding_window-overlap_05-size_256_30d67552/P211+50/npy/patch_9344_5248.npy,"['diffuse', 'point-like']"
+outputs/cutouts/cutouts-strategy_sliding_window-overlap_05-size_256_30d67552/P160+47/npy/patch_7808_6400.npy,"['diffuse', 'point-like', 'Interesting']"
+outputs/cutouts/cutouts-strategy_sliding_window-overlap_05-size_256_30d67552/P151+67/npy/patch_7552_2176.npy,['Interesting']
+outputs/cutouts/cutouts-strategy_sliding_window-overlap_05-size_256_30d67552/P232+45/npy/patch_5888_8704.npy,"['small-galaxy', 'diffuse', 'Interesting']"
+outputs/cutouts/cutouts-strategy_sliding_window-overlap_05-size_256_30d67552/P144+67/npy/patch_6016_7936.npy,"['sparse', 'small-galaxy', 'point-like', 'little-resolved']"
+outputs/cutouts/cutouts-strategy_sliding_window-overlap_05-size_256_30d67552/P022+34/npy/patch_6400_3200.npy,"['artefact', 'Nothing']"
+outputs/cutouts/cutouts-strategy_sliding_window-overlap_05-size_256_30d67552/P010+21/npy/patch_7168_2432.npy,"['diffuse', 'point-like', 'Interesting']"
+outputs/cutouts/cutouts-strategy_sliding_window-overlap_05-size_256_30d67552/P014+29/npy/patch_256_3840.npy,"['diffuse', 'full-resolved', 'Cutted']"
+outputs/cutouts/cutouts-strategy_sliding_window-overlap_05-size_256_30d67552/P340+18/npy/patch_6144_5120.npy,"['small-galaxy', 'full-resolved', 'FR']"
+outputs/cutouts/cutouts-strategy_sliding_window-overlap_05-size_256_30d67552/P153+42/npy/patch_1280_3200.npy,"['full-resolved', 'FR']"
+outputs/cutouts/cutouts-strategy_sliding_window-overlap_05-size_256_30d67552/P210+52/npy/patch_4736_1664.npy,['small-galaxy']
+outputs/cutouts/cutouts-strategy_sliding_window-overlap_05-size_256_30d67552/P39Hetdex19/npy/patch_3072_3328.npy,"['small-galaxy', 'little-resolved']"
+outputs/cutouts/cutouts-strategy_sliding_window-overlap_05-size_256_30d67552/P280+45/npy/patch_5376_4480.npy,['Mosaic']
+outputs/cutouts/cutouts-strategy_sliding_window-overlap_05-size_256_30d67552/P128+42/npy/patch_2176_5888.npy,"['small-galaxy', 'full-resolved', 'little-resolved', 'FR']"
+outputs/cutouts/cutouts-strategy_sliding_window-overlap_05-size_256_30d67552/P181+40/npy/patch_5632_3968.npy,"['full-resolved', 'Cutted']"
+outputs/cutouts/cutouts-strategy_sliding_window-overlap_05-size_256_30d67552/P147+52/npy/patch_7296_3328.npy,['Interesting']
+outputs/cutouts/cutouts-strategy_sliding_window-overlap_05-size_256_30d67552/P210+52/npy/patch_2048_1920.npy,['Nothing']
+outputs/cutouts/cutouts-strategy_sliding_window-overlap_05-size_256_30d67552/P138+52/npy/patch_3712_512.npy,"['sparse', 'point-like']"
+outputs/cutouts/cutouts-strategy_sliding_window-overlap_05-size_256_30d67552/P022+34/npy/patch_4736_5888.npy,['diffuse']
+outputs/cutouts/cutouts-strategy_sliding_window-overlap_05-size_256_30d67552/P133+55/npy/patch_2688_6016.npy,"['small-galaxy', 'little-resolved', 'FR']"
+outputs/cutouts/cutouts-strategy_sliding_window-overlap_05-size_256_30d67552/P165+57/npy/patch_4480_4736.npy,"['small-galaxy', 'artefact']"
+outputs/cutouts/cutouts-strategy_sliding_window-overlap_05-size_256_30d67552/P222+58/npy/patch_4736_896.npy,"['full-resolved', 'FR']"
+outputs/cutouts/cutouts-strategy_sliding_window-overlap_05-size_256_30d67552/P122+47/npy/patch_7424_3200.npy,"['artefact', 'Nothing']"
+outputs/cutouts/cutouts-strategy_sliding_window-overlap_05-size_256_30d67552/P001+41/npy/patch_2176_6144.npy,"['small-galaxy', 'FR']"
+outputs/cutouts/cutouts-strategy_sliding_window-overlap_05-size_256_30d67552/P024+31/npy/patch_5248_7296.npy,"['diffuse', 'little-resolved']"
+outputs/cutouts/cutouts-strategy_sliding_window-overlap_05-size_256_30d67552/P255+38/npy/patch_6016_6272.npy,"['full-resolved', 'Bent']"
+outputs/cutouts/cutouts-strategy_sliding_window-overlap_05-size_256_30d67552/P022+34/npy/patch_4096_2944.npy,['Nothing']
+outputs/cutouts/cutouts-strategy_sliding_window-overlap_05-size_256_30d67552/P152+47/npy/patch_2560_4608.npy,['diffuse']
+outputs/cutouts/cutouts-strategy_sliding_window-overlap_05-size_256_30d67552/P010+39/npy/patch_4992_7168.npy,"['small-galaxy', 'full-resolved', 'FR']"
+outputs/cutouts/cutouts-strategy_sliding_window-overlap_05-size_256_30d67552/P027+26/npy/patch_4224_128.npy,['Nothing']
+outputs/cutouts/cutouts-strategy_sliding_window-overlap_05-size_256_30d67552/P135+29/npy/patch_2688_3072.npy,"['small-galaxy', 'little-resolved', 'FR']"
+outputs/cutouts/cutouts-strategy_sliding_window-overlap_05-size_256_30d67552/P202+60/npy/patch_4480_5376.npy,['sparse']
+outputs/cutouts/cutouts-strategy_sliding_window-overlap_05-size_256_30d67552/P343+18/npy/patch_2176_2048.npy,['point-like']
+outputs/cutouts/cutouts-strategy_sliding_window-overlap_05-size_256_30d67552/P279+43/npy/patch_4352_4352.npy,['Border']
+outputs/cutouts/cutouts-strategy_sliding_window-overlap_05-size_256_30d67552/P8Hetdex28/npy/patch_5760_768.npy,['Nothing']
+outputs/cutouts/cutouts-strategy_sliding_window-overlap_05-size_256_30d67552/P219+42/npy/patch_1792_768.npy,"['full-resolved', 'FR']"
+outputs/cutouts/cutouts-strategy_sliding_window-overlap_05-size_256_30d67552/P154+50/npy/patch_6016_6400.npy,['Interesting']
+outputs/cutouts/cutouts-strategy_sliding_window-overlap_05-size_256_30d67552/P151+35/npy/patch_1920_3968.npy,"['small-galaxy', 'Bent']"
+outputs/cutouts/cutouts-strategy_sliding_window-overlap_05-size_256_30d67552/P130+60/npy/patch_9088_4992.npy,"['small-galaxy', 'diffuse', 'full-resolved', 'Interesting']"
+outputs/cutouts/cutouts-strategy_sliding_window-overlap_05-size_256_30d67552/P334+36/npy/patch_1152_7424.npy,"['little-resolved', 'Interesting']"
+outputs/cutouts/cutouts-strategy_sliding_window-overlap_05-size_256_30d67552/P010+21/npy/patch_7424_7936.npy,"['full-resolved', 'FR']"
+outputs/cutouts/cutouts-strategy_sliding_window-overlap_05-size_256_30d67552/P258+45/npy/patch_7680_6016.npy,"['full-resolved', 'FR']"
+outputs/cutouts/cutouts-strategy_sliding_window-overlap_05-size_256_30d67552/P247+50/npy/patch_2944_7680.npy,"['full-resolved', 'FR']"
+outputs/cutouts/cutouts-strategy_sliding_window-overlap_05-size_256_30d67552/P214+45/npy/patch_3968_2688.npy,['small-galaxy']
+outputs/cutouts/cutouts-strategy_sliding_window-overlap_05-size_256_30d67552/P245+40/npy/patch_4224_6016.npy,"['small-galaxy', 'diffuse', 'little-resolved']"
+outputs/cutouts/cutouts-strategy_sliding_window-overlap_05-size_256_30d67552/P188+32/npy/patch_5632_1152.npy,"['full-resolved', 'Interesting']"
+outputs/cutouts/cutouts-strategy_sliding_window-overlap_05-size_256_30d67552/P166+35/npy/patch_1536_2432.npy,['Interesting']
+outputs/cutouts/cutouts-strategy_sliding_window-overlap_05-size_256_30d67552/P353+28/npy/patch_1280_3072.npy,"['diffuse', 'Cutted']"
+outputs/cutouts/cutouts-strategy_sliding_window-overlap_05-size_256_30d67552/P356+26/npy/patch_6784_7424.npy,"['diffuse', 'Cutted']"
