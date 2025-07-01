@@ -1,0 +1,28 @@
+# Configuration for HKM on 3M Radio Astronomy images (3 Levels, Stronger Balancing).
+# GOAL: Strongly downsample common features, balance fewer final concepts (~100).
+# Setup: 3 levels (50k -> 5k -> 100 clusters). Assumes fewer core high-level concepts.
+# - k1=5k: Slightly less detail than previous. Avg L1 cluster size ~600.
+# - k2=500: Intermediate grouping. Avg L2 size ~100 (C1 centroids).
+# - k3=50: Very few final concepts, forcing strong balancing between major types. Avg L3 size ~100 (C2 centroids).
+
+n_levels: 3
+n_iters: 50
+n_clusters:
+- 5_000
+- 500
+- 50 # Fewer final clusters
+n_splits:
+- 1
+- 1
+- 1
+n_resampling_steps: [10, 10, 10] # Standard resampling
+sample_size: [300, 5, 5] # Adjusted: L1(60), L2(10)->r2=5, L3(50)->r3=25
+subset_indices_path: null
+checkpoint_period: 1_000
+dtype: float32
+high_precision: float32
+ngpus_per_node: [2, 2, 2]
+nnodes: [1, 1, 1]
+ncpus_per_gpu: 6
+sampling_strategy: r
+slurm_partition: null

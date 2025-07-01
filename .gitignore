@@ -9,7 +9,7 @@ model_weights
 sample_images
 features
 data
-configs
+#configs
 model_weights/*
 !model_weights/model_list.txt
 

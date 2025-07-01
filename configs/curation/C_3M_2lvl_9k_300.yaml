@@ -1,0 +1,38 @@
+# Configuration for HKM on 3M Radio Astronomy images (3 Levels).
+# GOAL: Downsample common features (background, artifacts, point sources)
+#       and relatively upsample rare features (resolved morphology, filaments, diffuse).
+# Setup: 3 levels (60k -> 4k -> 300 clusters). Assumes ~300 high-level distinct concepts to balance.
+# - k1=60k: Captures fine details (morphology nuances, artifact types). Avg L1 cluster size ~50.
+# - k2=4k: Intermediate grouping. Avg L2 size ~15 (C1 centroids).
+# - k3=300: Final concepts for balancing. Avg L3 size ~13 (C2 centroids).
+# Aggressive balancing: 10 resampling steps at ALL levels to fight imbalance early.
+# Final sampling strategy: 'r' (random) for diversity within rare clusters.
+# Uses single precision (float32) for efficiency.
+
+n_levels: 2
+n_iters: 50
+n_clusters:
+- 9_000
+- 300
+n_splits: 
+- 1
+- 1
+n_resampling_steps: # Keep aggressive resampling
+- 10
+- 10
+sample_size: # Recalculated: ~half avg size: L1(50)->r1=25, L2(15)->r2=8, L3(13.3)->r3=7
+- 175
+- 15
+subset_indices_path: null
+checkpoint_period: 1_000
+dtype: float32
+high_precision: float32
+ngpus_per_node:
+- 2
+- 2
+nnodes:
+- 1
+- 1
+ncpus_per_gpu: 6
+sampling_strategy: r
+slurm_partition: null
