@@ -1,0 +1,91 @@
+#!/bin/bash
+#SBATCH --job-name=clus_analysis
+#SBATCH --account=INA24_C5B09
+#SBATCH --partition=boost_usr_prod
+#SBATCH --qos=boost_qos_dbg
+#SBATCH --time=00:30:00
+#SBATCH --nodes=1 
+#SBATCH --ntasks-per-node=1
+#SBATCH --gres=gpu:1
+#SBATCH --gpus-per-node=1
+#SBATCH --cpus-per-task=6
+#SBATCH --output=clus_analysis%j.out
+#SBATCH --error=clus_analysis%j.err
+
+echo "Job started at $(date)"
+echo "Memory allocated: $SBATCH_MEM_PER_NODE MB"
+
+# Avvia il monitoraggio in background
+bash monitor_resources.sh $SLURM_JOB_ID &
+MONITOR_PID=$!
+
+
+
+##########sbatch script.sh --source_id c6e73956a66a49f98117157279342b47 --model_type thingsvision --model_name OpenCLIP --model_parameters "variant=ViT-B-32" "dataset=laion400m_e32"
+
+module load cuda cudnn nccl openmpi spack/0.21.0-68a
+spack load python@3.11.6%gcc@12.2.0
+source /leonardo_work/INA24_C5B09/clustering/bin/activate
+
+python -c "import torch; print('CUDA available:', torch.cuda.is_available()); print('CUDA device count:', torch.cuda.device_count())"
+
+LOG_TO_MLFLOW_FLAG="false"
+
+# Analizza gli argomenti
+while [[ $# -gt 0 ]]; do
+  key="$1"
+  case $key in
+    --subsample_id)
+      SUBSAMPLE_ID="$2"
+      shift 2
+      ;;
+    --dpi)
+      DPI="$2"
+      shift 2
+      ;;
+    --log_to_mlflow)
+      LOG_TO_MLFLOW_FLAG="true"
+      shift 1
+      ;;
+    --tracking_uri)
+      TRACKING_URI="$2"
+      shift 2
+      ;;
+    --n_neighbors)
+      N_NEIGHBORS="$2"
+      shift 2
+      ;;
+    --min_dist)
+      MIN_DIST="$2"
+      shift 2
+      ;;
+    --metric)
+      METRIC="$2"
+      shift 2
+      ;;
+    *)
+      echo "Parametro sconosciuto: $1"
+      shift
+      ;;
+  esac
+done
+
+# Costruisci il comando
+CMD="python scripts/analyze_subsample.py"
+
+# Aggiungi i parametri al comando
+if [ ! -z "$SUBSAMPLE_ID" ]; then CMD="$CMD --subsample_id $SUBSAMPLE_ID"; fi
+if [ ! -z "$DPI" ]; then CMD="$CMD --dpi $DPI"; fi
+if [ "$LOG_TO_MLFLOW_FLAG" = "true" ]; then CMD="$CMD --log_to_mlflow"; fi
+if [ ! -z "$TRACKING_URI" ]; then CMD="$CMD --tracking_uri $TRACKING_URI"; fi
+if [ ! -z "$N_NEIGHBORS" ]; then CMD="$CMD --n_neighbors $N_NEIGHBORS"; fi
+if [ ! -z "$MIN_DIST" ]; then CMD="$CMD --min_dist $MIN_DIST"; fi
+if [ ! -z "$METRIC" ]; then CMD="$CMD --metric $METRIC"; fi
+
+echo "Esecuzione comando: $CMD"
+eval $CMD
+
+# Ferma il monitoraggio
+kill $MONITOR_PID
+
+echo "Job finished at $(date)"

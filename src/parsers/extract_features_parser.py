@@ -39,6 +39,16 @@ def get_parser():
                         help="npy, txt, mat, pt, hdf5")
     parser.add_argument('--test_mode', action='store_true', help='Esegui in modalità test')
     parser.add_argument('--test_batches', type=int, default=5, help='Numero di batch da processare in modalità test')
+    parser.add_argument(
+        '--model-input-channels',
+        type=int,
+        default=3,
+        choices=[1, 3],
+        help="Numero di canali che il modello si aspetta in input. "
+             "Standard ResNet/CLIP/etc. richiedono 3. "
+             "Alcuni modelli custom o DINO possono usare 1. Default: 3"
+    )
+
 
     args = parser.parse_args()
 

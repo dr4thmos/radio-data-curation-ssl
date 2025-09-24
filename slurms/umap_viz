@@ -1,0 +1,113 @@
+#!/bin/bash
+#SBATCH --job-name=umap_viz
+#SBATCH --account=INA24_C5B09
+#SBATCH --partition=boost_usr_prod
+#SBATCH --qos=boost_qos_lprod
+#SBATCH --time=00:30:00
+#SBATCH --nodes=1 
+#SBATCH --ntasks-per-node=1
+#SBATCH --gres=gpu:1
+#SBATCH --cpus-per-task=8
+#SBATCH --mem=123500M
+#SBATCH --output=logs/umap_viz_%j.out
+#SBATCH --error=logs/umap_viz_%j.err
+
+# Crea la directory per i log se non esiste
+mkdir -p logs
+
+echo "----------------------------------------------------"
+echo "Job SLURM ID:   $SLURM_JOB_ID"
+echo "Job Name:       $SLURM_JOB_NAME"
+echo "Node List:      $SLURM_JOB_NODELIST"
+echo "Start Time:     $(date)"
+echo "----------------------------------------------------"
+
+# --- Setup dell'ambiente ---
+module load cuda cudnn nccl openmpi spack/0.21.0-68a
+spack load python@3.9
+# ATTENZIONE: Assicurati che questo sia l'environment virtuale corretto
+source /leonardo_work/INA24_C5B09/clustering/bin/activate
+export CUDA_VISIBLE_DEVICES="0"
+
+# --- Parametri dello script ---
+# ATTENZIONE: Assicurati che questo sia il path corretto allo script Python
+PYTHON_SCRIPT_PATH="scripts/umap_vis_paper.py" 
+
+# Variabili per gli argomenti (con default)
+UNLABELED_FEATURES_PATH=""
+LABELED_FEATURES_PATH=""
+JSON_PATH=""
+OUTPUT_DIR=""
+PCA_COMPONENTS=0
+N_NEIGHBORS=50
+MIN_DIST=0.1
+METRIC="cosine"
+DPI=300
+MARKER_RADIUS=0.1
+DENSMAP_FLAG=""
+
+# --- Parsing degli argomenti passati allo script BASH ---
+while [[ $# -gt 0 ]]; do
+  key="$1"
+  case $key in
+    --unlabeled_features_path) UNLABELED_FEATURES_PATH="$2"; shift 2 ;;
+    --labeled_features_path)   LABELED_FEATURES_PATH="$2"; shift 2 ;;
+    --labeled_info_json_path)  JSON_PATH="$2"; shift 2 ;;
+    --output_dir)              OUTPUT_DIR="$2"; shift 2 ;;
+    --pca_components)          PCA_COMPONENTS="$2"; shift 2 ;;
+    --n_neighbors)             N_NEIGHBORS="$2"; shift 2 ;;
+    --min_dist)                MIN_DIST="$2"; shift 2 ;;
+    --metric)                  METRIC="$2"; shift 2 ;;
+    --dpi)                     DPI="$2"; shift 2 ;;
+    --marker_radius)           MARKER_RADIUS="$2"; shift 2 ;;
+    --marker_linewidth)        MARKER_LINEWIDTH="$2"; shift 2 ;;
+    --densmap)                 DENSMAP_FLAG="--densmap"; shift 1 ;;
+    *) 
+      echo "Errore: Parametro sconosciuto: $1"
+      exit 1
+      ;;
+  esac
+done
+
+# --- Controlli di validità per gli argomenti richiesti ---
+if [ -z "$UNLABELED_FEATURES_PATH" ] || [ -z "$LABELED_FEATURES_PATH" ] || [ -z "$JSON_PATH" ] || [ -z "$OUTPUT_DIR" ]; then
+  echo "Errore: mancano uno o più argomenti richiesti."
+  echo "Uso: sbatch run_umap.sh --unlabeled_features_path <path> --labeled_features_path <path> --labeled_info_json_path <path> --output_dir <path> [opzioni]"
+  echo "Opzioni: [--pca_components <int>] [--n_neighbors <int>] [--min_dist <float>] [--metric <str>] [--marker_radius <float>] [--densmap]"
+  exit 1
+fi
+
+# --- Costruzione del comando Python completo ---
+CMD="python $PYTHON_SCRIPT_PATH \
+    --unlabeled_features_path \"$UNLABELED_FEATURES_PATH\" \
+    --labeled_features_path \"$LABELED_FEATURES_PATH\" \
+    --labeled_info_json_path \"$JSON_PATH\" \
+    --output_dir \"$OUTPUT_DIR\" \
+    --pca_components $PCA_COMPONENTS \
+    --n_neighbors $N_NEIGHBORS \
+    --min_dist $MIN_DIST \
+    --metric $METRIC \
+    --dpi $DPI \
+    --marker_radius $MARKER_RADIUS \
+    --marker_linewidth $MARKER_LINEWIDTH \
+    
+    $DENSMAP_FLAG"
+
+# --- Esecuzione ---
+echo ""
+echo "Comando da eseguire:"
+echo "$CMD"
+echo ""
+echo "--- Inizio esecuzione script Python ---"
+
+eval $CMD
+
+EXIT_CODE=$?
+
+echo "--- Fine esecuzione script Python (Codice di uscita: $EXIT_CODE) ---"
+echo ""
+echo "----------------------------------------------------"
+echo "Job Finished:     $(date)"
+echo "----------------------------------------------------"
+
+exit $EXIT_CODE

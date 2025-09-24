@@ -48,7 +48,17 @@ def main(args):
         overwrite=True,
     )
 
-    X_ori = np.load(args.data_path, mmap_mode="r")
+    logger.info(f"Loading data from HDF5 file: {args.data_path}")
+if not args.data_path.endswith(('.h5', '.hdf5')):
+    raise ValueError(f"This script expects an HDF5 file (.h5, .hdf5), but got: {args.data_path}")
+
+with h5py.File(args.data_path, 'r') as h5_file:
+    logger.info("HDF5 file opened. Loading 'features' dataset into memory...")
+    # L'aggiunta di [:] o [...] alla fine forza h5py a leggere l'intero
+    # dataset dal disco e a creare un vero array NumPy in RAM.
+    X_ori = h5_file['features'][...]
+
+    logger.info(f"Successfully loaded data into NumPy array with shape {X_ori.shape} and dtype {X_ori.dtype}")
     if args.subset_indices_path is not None:
         logger.info(f"Using subset with indices in {args.subset_indices_path}")
         subset_indices = np.load(args.subset_indices_path)

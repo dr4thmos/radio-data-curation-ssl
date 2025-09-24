@@ -1,0 +1,1 @@
+In this folder are stored configuration for Hierarchical k-means as yaml file.

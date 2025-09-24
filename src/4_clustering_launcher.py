@@ -305,7 +305,7 @@ if __name__ == "__main__":
         exit()
     else:
         os.makedirs(cfg.exp_dir)
-
+    """
     try:
         run = mlflow.get_run(cfg.features_id) # a2699b08925941bfb84c8aafd0ab3098
         features_root_folder = run.data.params.get("root_folder")
@@ -318,7 +318,35 @@ if __name__ == "__main__":
 
     except mlflow.exceptions.MlflowException as e:
         print(f"Errore nel recuperare il cutout_id {cfg.features_id}: {e}")
+    """
 
+    try:
+        run = mlflow.get_run(cfg.features_id) 
+        features_root_folder = run.data.params.get("root_folder")
+        features_run_folder = run.data.params.get("run_folder")
+        # Questo è il nome del file originale, es. 'features_data_fast.h5'
+        features_info_filename = run.data.params.get("features_filename")
+        
+        # Costruisci il percorso completo del file originale
+        original_features_path = os.path.join(features_root_folder, features_run_folder, features_info_filename)
+        
+        # Controlla l'estensione e cambiala in .npy
+        if original_features_path.endswith('.h5'):
+            # Usa os.path.splitext per separare nome ed estensione, poi ricombina
+            path_without_ext, _ = os.path.splitext(original_features_path)
+            npy_features_path = path_without_ext + '.npy'
+            print(f"INFO: Rilevato file .h5. Il percorso per il clustering è stato impostato su: {npy_features_path}")
+        else:
+            # Se non è .h5, lo usiamo così com'è (per retrocompatibilità)
+            npy_features_path = original_features_path
+            print(f"INFO: Usando il percorso delle feature così com'è: {npy_features_path}")
+            
+        # Salva nella configurazione il percorso al file .npy che verrà usato dal clustering
+        cfg.embeddings_path = npy_features_path
+
+    except mlflow.exceptions.MlflowException as e:
+        print(f"Errore nel recuperare il cutout_id {cfg.features_id}: {e}")
+        exit(1) # È meglio uscire se non si trovano le feature
     write_slurm_scripts(cfg)
     write_local_launcher(cfg.exp_dir, cfg.n_levels, cfg.n_splits, cfg.scripts_path)
     write_launcher(cfg.exp_dir, cfg.n_levels, cfg.n_splits, cfg.scripts_path)

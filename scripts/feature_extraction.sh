@@ -1,2 +1,0 @@
-python src/2_represent_test_integrated.py   --model_type cecconello_ssl --ckpt_path "/home/tcecconello/radioimgs/radio-data-curation-ssl/model_weights/uja9qvb7/uja9qvb7.ckpt" --model_name resnet18 --module_name avgpool
-python src/2_represent_test_integrated.py   --model_type thingsvision --model_name OpenCLIP --model_parameters variant=ViT-g-14 dataset=laion2b_s34b_b88k --module_name visual

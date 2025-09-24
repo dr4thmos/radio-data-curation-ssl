@@ -17,7 +17,7 @@ def main():
     
     run = wandb.init(
         project="toy_pipeline",
-        entity="ssl-inaf",
+        entity="my_entity",
         group=experiment_id,
         job_type="subsampling",
         name="subsampling_" + datetime.now().strftime("%Y%m%d_%H%M%S"),

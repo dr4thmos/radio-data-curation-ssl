@@ -154,6 +154,8 @@ def recursive_hierarchical_sampling(
             return np.concatenate([replicates, remaining_samples])
     else:
         subcl_indices = clusters.clusters[level][cl_index]
+        if len(subcl_indices) == 0:
+            return np.array([], dtype=np.int64)
         subcluster_sizes = clusters.flat_clusters_size[level - 1][subcl_indices]
         subcluster_target_sizes = find_subcluster_target_size(
             subcluster_sizes,

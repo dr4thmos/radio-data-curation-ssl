@@ -1,0 +1,95 @@
+#!/bin/bash
+#SBATCH --job-name=cuml_retrieve
+#SBATCH --account=INA24_C5B09
+#SBATCH --partition=boost_usr_prod
+#SBATCH --qos=boost_qos_lprod
+#SBATCH --time=00:30:00
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1
+#SBATCH --gres=gpu:1
+#SBATCH --gpus-per-node=1
+#SBATCH --cpus-per-task=8
+#SBATCH --output=retrieve_%j.out
+#SBATCH --error=retrieve_%j.err
+
+echo "Job started at $(date)"
+echo "Job ID: $SLURM_JOB_ID"
+# ... (altri echo iniziali) ...
+
+# Avvia monitoraggio (se esiste)
+if [ -f "monitor_resources.sh" ]; then
+    bash monitor_resources.sh $SLURM_JOB_ID &
+    MONITOR_PID=$!
+else
+    MONITOR_PID=""
+fi
+
+module load cuda cudnn nccl openmpi spack/0.21.0-68a # Adatta
+spack load python@3.11.6%gcc@12.2.0 # Adatta
+
+# Attiva ambiente virtuale con faiss-gpu
+VENV_PATH="/leonardo_work/INA24_C5B09/clustering/bin/activate" # Adatta
+if [ -f "$VENV_PATH" ]; then source "$VENV_PATH"; else echo "Error: Venv not found"; exit 1; fi
+
+# --- Inizializza variabili ---
+FEATURE_RUN_ID=""
+LOG_TO_MLFLOW_FLAG="false"
+TRACKING_URI=""
+OUTPUT_FILENAME="faiss_index.index"
+USE_GPU_FLAG="false"
+NORMALIZE_FLAG="false"
+INDEX_TYPE="IndexFlatL2"
+
+# --- Analizza argomenti SLURM ---
+echo "Parsing SLURM script arguments..."
+while [[ $# -gt 0 ]]; do
+  key="$1"
+  case $key in
+    --feature_run_id) FEATURE_RUN_ID="$2"; shift 2 ;;
+    --log_to_mlflow) LOG_TO_MLFLOW_FLAG="true"; shift 1 ;;
+    --tracking_uri) TRACKING_URI="$2"; shift 2 ;;
+    --output_index_filename) OUTPUT_FILENAME="$2"; shift 2 ;;
+    --use_gpu) USE_GPU_FLAG="true"; shift 1 ;;
+    --normalize) NORMALIZE_FLAG="true"; shift 1 ;;
+    --index_type) INDEX_TYPE="$2"; shift 2 ;;
+    *) echo "Parametro sconosciuto per SLURM: $1"; shift ;;
+  esac
+done
+echo "Argument parsing complete."
+
+# --- Costruisci comando Python ---
+PYTHON_SCRIPT="scripts/features_distance_faiss.py" # Assicurati che il nome sia corretto
+if [ ! -f "$PYTHON_SCRIPT" ]; then echo "Error: Script $PYTHON_SCRIPT not found"; exit 1; fi
+
+CMD="python $PYTHON_SCRIPT"
+
+# Argomento obbligatorio
+if [ -z "$FEATURE_RUN_ID" ]; then echo "Error: --feature_run_id is required."; exit 1; fi
+CMD="$CMD --feature_run_id $FEATURE_RUN_ID"
+
+# Flags e opzionali
+if [ "$LOG_TO_MLFLOW_FLAG" = "true" ]; then CMD="$CMD --log_to_mlflow"; fi
+if [ ! -z "$TRACKING_URI" ]; then CMD="$CMD --tracking_uri $TRACKING_URI"; fi
+CMD="$CMD --output_index_filename $OUTPUT_FILENAME"
+if [ "$USE_GPU_FLAG" = "true" ]; then CMD="$CMD --use_gpu"; fi
+if [ "$NORMALIZE_FLAG" = "true" ]; then CMD="$CMD --normalize"; fi
+CMD="$CMD --index_type $INDEX_TYPE"
+
+# --- Esegui comando ---
+echo "----------------------------------------"
+echo "Executing command:"
+echo "$CMD"
+echo "----------------------------------------"
+eval $CMD
+EXIT_CODE=$?
+echo "----------------------------------------"
+echo "Python script finished with exit code: $EXIT_CODE"
+echo "----------------------------------------"
+
+# --- Ferma monitoraggio ---
+if [ ! -z "$MONITOR_PID" ]; then kill $MONITOR_PID; wait $MONITOR_PID 2>/dev/null; fi
+
+echo "Job finished at $(date)"
+exit $EXIT_CODE
+
+# sbatch scripts/slurm_build_faiss.sh --feature_run_id b389d33c03a64d7d98b8ca22e6023447 --use_gpu --log_to_mlflow

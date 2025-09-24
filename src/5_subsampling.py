@@ -1,13 +1,16 @@
 from datetime import datetime
 import os
-from utils import format_readable_run_name, compute_config_hash, log_on_mlflow
-from parsers.subsampling_parser import get_parser
+from .utils import format_readable_run_name, compute_config_hash, log_on_mlflow
+from .parsers.subsampling_parser import get_parser
 import mlflow
 import json
 import numpy as np
+from . import hierarchical_sampling as hs
+from .clusters import HierarchicalCluster
+"""
 import hierarchical_sampling as hs
 from clusters import HierarchicalCluster
-
+"""
 MLFLOW_EXPERIMENT_NAME = "subsampling"
 MLFLOW_RUN_NAME = "subsampling"
 SUBSAMPLED_INDICES_BASE_FILENAME = "subsampled_indices"
