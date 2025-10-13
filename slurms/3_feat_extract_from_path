@@ -3,7 +3,7 @@
 #SBATCH --account=INA24_C5B09
 #SBATCH --partition=boost_usr_prod
 #SBATCH --qos=boost_qos_lprod
-#SBATCH --time=48:00:00
+#SBATCH --time=00:30:00
 #SBATCH --nodes=1 
 #SBATCH --ntasks-per-node=1
 #SBATCH --gres=gpu:1
@@ -13,7 +13,6 @@
 #SBATCH --output=feat_extract%j.out
 #SBATCH --error=feat_extract%j.err
 
-
 echo "Job started at $(date)"
 echo "Memory allocated: $SBATCH_MEM_PER_NODE MB"
 
@@ -21,23 +20,11 @@ echo "Memory allocated: $SBATCH_MEM_PER_NODE MB"
 bash monitor_resources.sh $SLURM_JOB_ID &
 MONITOR_PID=$!
 
-
-
-
-##########sbatch script.sh --source_id c6e73956a66a49f98117157279342b47 --model_type thingsvision --model_name OpenCLIP --model_parameters "variant=ViT-B-32" "dataset=laion400m_e32"
-
-
-GPUS_PER_NODE=1
+# --- Setup dell'ambiente ---
 echo "NODELIST="${SLURM_NODELIST}
 master_addr=$(scontrol show hostnames "$SLURM_JOB_NODELIST" | head -n 1)
 export MASTER_ADDR=$master_addr
 echo "MASTER_ADDR="$MASTER_ADDR
-echo "SLURM_NTASKS="$SLURM_NTASKS
-NTASKS_PER_NODE=$((SLURM_NTASKS / SLURM_JOB_NUM_NODES))
-echo "NTASKS_PER_NODE="$NTASKS_PER_NODE
-export WORLD_SIZE=$((GPUS_PER_NODE * SLURM_NNODES))
-echo "WORLD_SIZE=$WORLD_SIZE"
-MASTER_PORT=11111
 
 module load cuda cudnn nccl openmpi spack/0.21.0-68a
 spack load python@3.9
@@ -45,39 +32,38 @@ source /leonardo_work/INA24_C5B09/thingsvision/bin/activate
 
 python -c "import torch; print('CUDA available:', torch.cuda.is_available()); print('CUDA device count:', torch.cuda.device_count())"
 
-# Valori predefiniti
-SOURCE_ID=""
+# --- Valori predefiniti ---
+### MODIFICA 1: Aggiunti i nuovi argomenti e rimossi quelli vecchi ###
+INPUT_FOLDER=""
+INFO_JSON_NAME="info.json" # Valore di default per il file json
 CUDA_DEVICES="0"
-FEATURES_FOLDER="$(pwd)/features"
 MODEL_TYPE=""
 CKPT_PATH=""
-MODEL_TYPE="thingsvision"
 MODEL_NAME=""
-MODEL_PARAMETERS="variant=ViT-B-32 dataset=laion400m_e32"
-BACKEND="pt"
-SOURCE="custom"
-BATCH_SIZE=128
+MODEL_PARAMETERS=""
+SOURCE="torchvision"
+BATCH_SIZE=1024
 MODULE_NAME=""
-NORMALIZATION="mean05std05"
+NORMALIZATION="minmax"
 RESIZE=224
-OUTPUT_FILE_FORMAT="npy"
 TEST_MODE=false
 TEST_BATCHES=0
 
-# Analizza gli argomenti
+# --- Analisi degli argomenti ---
 while [[ $# -gt 0 ]]; do
   key="$1"
   case $key in
-    --source_id)
-      SOURCE_ID="$2"
+    ### MODIFICA 2: Aggiunto il parsing per i nuovi argomenti ###
+    --input_folder)
+      INPUT_FOLDER="$2"
+      shift 2
+      ;;
+    --info_json_name)
+      INFO_JSON_NAME="$2"
       shift 2
       ;;
     --cuda_devices)
       CUDA_DEVICES="$2"
-      shift 2
-      ;;
-    --features_folder)
-      FEATURES_FOLDER="$2"
       shift 2
       ;;
     --model_type)
@@ -99,11 +85,7 @@ while [[ $# -gt 0 ]]; do
         MODEL_PARAMETERS="$MODEL_PARAMETERS $1"
         shift
       done
-      MODEL_PARAMETERS="${MODEL_PARAMETERS## }"  # Rimuovi spazio iniziale
-      ;;
-    --backend)
-      BACKEND="$2"
-      shift 2
+      MODEL_PARAMETERS="${MODEL_PARAMETERS## }"
       ;;
     --source)
       SOURCE="$2"
@@ -125,10 +107,6 @@ while [[ $# -gt 0 ]]; do
       RESIZE="$2"
       shift 2
       ;;
-    --output_file_format)
-      OUTPUT_FILE_FORMAT="$2"
-      shift 2
-      ;;
     --test_mode)
       TEST_MODE=true
       shift
@@ -144,21 +122,34 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-# Controlla se source_id è stato specificato (parametro richiesto)
-if [ -z "$SOURCE_ID" ]; then
-  echo "Errore: --source_id è richiesto"
+### --- BLOCCO DI DEBUG --- ###
+echo "-------------------------------------"
+echo "DEBUG: Valori delle variabili dopo il parsing"
+echo "INPUT_FOLDER:     '$INPUT_FOLDER'"
+echo "MODEL_TYPE:       '$MODEL_TYPE'"
+echo "MODEL_NAME:       '$MODEL_NAME'" # <-- Questa sarà probabilmente vuota
+echo "CKPT_PATH:        '$CKPT_PATH'"
+echo "MODULE_NAME:      '$MODULE_NAME'"
+echo "-------------------------------------"
+### --- FINE BLOCCO DI DEBUG --- ###
+
+# Controlla se input_folder è stato specificato (parametro richiesto)
+if [ -z "$INPUT_FOLDER" ]; then
+  echo "Errore: --input_folder è un argomento richiesto"
   exit 1
 fi
 
 # Imposta CUDA_VISIBLE_DEVICES
 export CUDA_VISIBLE_DEVICES="$CUDA_DEVICES"
 
-# Costruisci il comando
-CMD="python src/3_feature_extraction_chunk_fast.py"
+# --- Costruzione del comando ---
+### MODIFICA 3: Aggiornato il nome dello script Python ###
+CMD="python src/3b_feature_extraction_from_path.py"
 
 # Aggiungi i parametri al comando
-if [ ! -z "$SOURCE_ID" ]; then CMD="$CMD --source_id $SOURCE_ID"; fi
-if [ ! -z "$FEATURES_FOLDER" ]; then CMD="$CMD --features_folder $FEATURES_FOLDER"; fi
+### MODIFICA 4: Usiamo i nuovi argomenti per costruire il comando ###
+if [ ! -z "$INPUT_FOLDER" ]; then CMD="$CMD --input_folder $INPUT_FOLDER"; fi
+if [ ! -z "$INFO_JSON_NAME" ]; then CMD="$CMD --info_json_name $INFO_JSON_NAME"; fi
 if [ ! -z "$MODEL_TYPE" ]; then CMD="$CMD --model_type $MODEL_TYPE"; fi
 if [ ! -z "$CKPT_PATH" ]; then CMD="$CMD --ckpt_path $CKPT_PATH"; fi
 if [ ! -z "$MODEL_NAME" ]; then CMD="$CMD --model_name $MODEL_NAME"; fi
@@ -167,23 +158,16 @@ if [ ! -z "$MODEL_PARAMETERS" ]; then
     CMD="$CMD --model_parameters $param"
   done
 fi
-if [ ! -z "$BACKEND" ]; then CMD="$CMD --backend $BACKEND"; fi
 if [ ! -z "$SOURCE" ]; then CMD="$CMD --source $SOURCE"; fi
 if [ ! -z "$BATCH_SIZE" ]; then CMD="$CMD --batch_size $BATCH_SIZE"; fi
 if [ ! -z "$MODULE_NAME" ]; then CMD="$CMD --module_name $MODULE_NAME"; fi
 if [ ! -z "$NORMALIZATION" ]; then CMD="$CMD --normalization $NORMALIZATION"; fi
 if [ ! -z "$RESIZE" ]; then CMD="$CMD --resize $RESIZE"; fi
-if [ ! -z "$OUTPUT_FILE_FORMAT" ]; then CMD="$CMD --output_file_format $OUTPUT_FILE_FORMAT"; fi
 if [ "$TEST_MODE" = true ]; then 
   CMD="$CMD --test_mode"
-fi
-if [ -n "$TEST_BATCHES" ] && [ "$TEST_BATCHES" -gt 0 ]; then 
-  CMD="$CMD --test_batches $TEST_BATCHES"
-fi
-
-# Aggiungi i parametri di configurazione, se specificati
-if [ ! -z "$CONFIG_PATH" ] && [ ! -z "$CONFIG_NAME" ]; then
-  CMD="$CMD --config-path $CONFIG_PATH --config-name $CONFIG_NAME"
+  if [ -n "$TEST_BATCHES" ] && [ "$TEST_BATCHES" -gt 0 ]; then 
+    CMD="$CMD --test_batches $TEST_BATCHES"
+  fi
 fi
 
 echo "Esecuzione comando: $CMD"
